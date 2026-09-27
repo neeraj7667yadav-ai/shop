@@ -1,12 +1,26 @@
 import Shopcontainer from './Shopcontainer'
-import {Data} from './Data'
-import { useState } from 'react'
+ import {useEffect, useRef, useState } from 'react'
 import Notfound from './Notfound'
 function Shopshendle() {
   const [inp, setInp]= useState("")
-  const [productdata, setproductdata]= useState(Data)
+  const [productdata, setproductdata]= useState([]);
+  const [intialproductData, setintialproductData]= useState([]);
+  //useref Hook
+  const refelm = useRef()
+  const getData = async()=>{
+    let res = await fetch("https://dummyjson.com/products");
+    let data = await res.json()
+    setproductdata(data.products)
+    setintialproductData(data.products)
+    
+  }
+  //useeffect hook
+  useEffect(()=>{
+    getData();
+  },[])
   const handlesearch= ()=> {
-    let afterfilterdata = Data.filter(
+    console.log(refelm.current.className)
+    let afterfilterdata = intialproductData.filter(
       (elm)=> elm.title.toLocaleLowerCase().includes(inp.toLocaleLowerCase())
     ); 
     setproductdata( afterfilterdata)
@@ -14,13 +28,16 @@ function Shopshendle() {
   const handlekey = (e) => {
     if (e.key === "Enter") {
       handlesearch();
+      
     }
   };
   return (
      <div className="container">
       <div className="py-2">
         <div>
-          <input type="text" className='' onChange={(e)=>setInp(e.target.value)}
+          <input type="text" 
+          ref={refelm}
+          className='fukra' onChange={(e)=>setInp(e.target.value)}
           onKeyDown={handlekey} /> 
         </div>
         <button type="button" className="btn btn-success" onClick={handlesearch}>Search</button>
